@@ -1,28 +1,31 @@
-# Sniffer
+# Sniffer — open-source AI prospecting & sales outreach automation for Windows
 
-Windows-first AI prospecting intelligence desktop app. Sniffer discovers high-fit
-prospects, enriches them, detects relevant signals, explains *why* they fit, and
-turns research into personalized outreach — all while keeping the user's
-workspace local.
+**Sniffer** is a local-first, Windows desktop app that automates B2B lead generation, prospect enrichment, lead scoring, and personalized outreach. Describe your ideal customer profile in plain English, and Sniffer finds high-fit prospects, scrapes real contact data, qualifies them with an evidence-based score, and writes personalized emails / LinkedIn messages / audit reports / SPIN interview scripts — all while keeping your prospecting data on your own machine.
 
-Built with **Electron + React + TypeScript**, bundled by **electron-vite**,
-persisted to **SQLite** through **Drizzle ORM**.
+> Keywords: lead generation, prospecting, lead enrichment, B2B sales, outbound sales, ICP, sales automation, cold email, LinkedIn outreach, CRM sync, AI agent, Apollo, Apify, HubSpot, Salesforce, Odoo, Electron.
 
-## Stack
+Built with **Electron + React + TypeScript**, bundled by **electron-vite**, persisted to **SQLite** through **Drizzle ORM**.
 
-- **Desktop shell** — Electron (main + preload + renderer), context-isolated & sandboxed
-- **UI** — React 19, no runtime router (state-based navigation), plain CSS
-- **Data** — `node:sqlite` (built into Electron; no native compilation) + Drizzle ORM
-- **Validation** — Zod 4
-- **Secrets** — Electron `safeStorage` (Windows DPAPI); API keys never reach the renderer
-- **AI** — provider-agnostic `AIClient` with OpenAI-compatible and Anthropic-compatible clients, plus a router (`default` / `research` / `writing` / `extraction` model profiles)
+## Why Sniffer
 
-## Getting started
+- **Local-first & private** — search history, lists, analyses and prompts live in a local SQLite database; API keys are encrypted with Windows DPAPI and never reach the UI.
+- **AI-driven, provider-agnostic** — works with any OpenAI-compatible or Anthropic-compatible gateway (OpenAI, Anthropic, Gemini, DeepSeek, Ollama, OpenRouter, Hugging Face, …).
+- **Autopilot agent** — one goal in, the full loop out: Sniffer picks the data source, auto-discovers the right Apify actor, searches → saves → enriches → qualifies.
+- **Real enrichment** — web-scrapes the company's site for emails/people, plus Apollo, Apify and LinkedIn (OAuth) providers.
+- **Qualification rubric** — scores digital presence, social activity, industry fit and scale potential.
+- **Outreach kit** — email, LinkedIn & WhatsApp drafts, a personalized audit report, and a SPIN interview script, with local case-study RAG for consistency.
+
+## Quick start
 
 ```bash
-npm install        # install dependencies
+git clone https://github.com/Bgit555/Sniffer.git
+cd Sniffer
+npm install        # downloads Electron via postinstall
 npm run dev        # launch in development (HMR)
-npm run build      # typecheck-free production build
+```
+
+```bash
+npm run build      # production build
 npm run typecheck  # tsc across main + renderer
 npm run build:win  # package a Windows NSIS installer (release/)
 ```
@@ -31,50 +34,31 @@ First run creates `%APPDATA%\Sniffer\` (database, logs, exports, cache, backups)
 
 ## Core loop
 
-1. **Search** — describe an ICP in plain English. The AI query parser (or an
-   offline fallback) turns it into a structured spec; enabled data providers
-   return normalized matches (falling back to the built-in demo dataset).
-2. **Save** — save prospects to lists and saved searches.
-3. **Enrich** — pull decision-makers from your providers (Apollo / Apify) or demo.
-4. **Analyze** — structured AI analysis with a fit score + evidence.
+1. **Search** — describe an ICP in plain English → structured spec → enabled data providers → normalized matches.
+2. **Save** — prospects to lists and saved searches.
+3. **Enrich** — web scrape → Apollo/Apify/LinkedIn → AI role estimates.
+4. **Qualify** — AI analysis with fit score + qualification rubric.
 5. **Prompt library** — reusable `{{variable}}` prompts run against any prospect.
-6. **Outreach** — generate email / LinkedIn / WhatsApp drafts (never auto-sent).
-7. **CRM push** — push a company/contacts (or a whole list) to HubSpot, Salesforce or Odoo.
-8. **Export** — CSV export via the local job queue.
+6. **Outreach** — message + audit report + SPIN script (never auto-sent).
+7. **CRM push** — HubSpot, Salesforce, Odoo.
+8. **Export** — CSV via a local job queue.
 
-## Data providers & connections
+## Integrations
 
-Under **Settings → Data providers** you can store API keys (securely, via
-Windows DPAPI) and enable providers:
+- **AI gateways** — OpenAI, Anthropic, Google Gemini, DeepSeek, Ollama, OpenRouter, Hugging Face, or any custom OpenAI/Anthropic-compatible endpoint.
+- **Data providers** — Apollo (search + enrich), Apify (auto actor discovery), LinkedIn (OAuth), built-in demo dataset.
+- **CRMs** — HubSpot, Salesforce (OAuth "Login with…"), Odoo.
+- **Enrichment** — built-in website scraper (emails, social links, AI-extracted contacts).
 
-- **Apollo** — company/people search and enrichment.
-- **Apify** — run your own Apify actors (search + enrichment) with an Apify token and actor id.
-- **Demo** — the built-in (fictional) dataset, used only when no live provider is
-  configured. Once a live provider is saved+enabled, demo data is **not**
-  auto-injected — if the provider returns nothing you get an empty result plus a
-  clear note, unless you opt into "demo fallback" in Settings.
+## Security
 
-**Settings → CRM connections** lets you connect **HubSpot**, **Salesforce** and
-**Odoo**. Use "Push to CRM" on any company page or list to sync prospects and
-their contacts. CRM/provider adapters are experimental — every result or error is
-surfaced in the UI.
+- `contextIsolation`, `nodeIntegration: false`, `sandbox: true`.
+- Secrets stored via Electron `safeStorage` (Windows DPAPI); never written to disk in plaintext or sent to the renderer.
+- No `.env`, no keys in source, and no third-party analytics.
 
-**Settings → Connected apps ("Login with …")** provides a real OAuth browser
-flow (HubSpot, Salesforce, LinkedIn) instead of pasting tokens. Each provider
-needs an OAuth app you create in its developer console — paste the **Client ID
-+ Secret** once, then click **Connect** and authorize in the browser. OAuth
-tokens (and instance URLs) are used automatically by CRM push. Data providers
-that are token-based (Apollo, Apify) still have a **Test** button that validates
-the key live.
+## Contributing
 
-## Settings
-
-Configure your own AI gateway under **Settings → AI gateway**: provider protocol,
-gateway URL, API key, and per-purpose models. The API key is acknowledged as
-stored (DPAPI) and never sent to the UI. Without a gateway the app still works
-offline (demo provider + automated analysis).
-
-## Self-tests
+Contributions are welcome. Open an issue to discuss a feature before sending a large PR.
 
 ```bash
 SNIFFER_E2E=1    npx electron .   # full offline workflow smoke test
@@ -86,9 +70,13 @@ Results are written to `%TEMP%\sniffer-e2e-result.json`.
 ## Layout
 
 ```
-src/main        Electron main process (window, IPC, DB, services, AI, search, jobs)
+src/main        Electron main process (window, IPC, DB, services, AI, search, jobs, providers)
 src/preload     minimal contextBridge (window.sniffer)
 src/renderer    React UI
 src/shared      types shared across processes
 drizzle/        generated SQL migrations (applied idempotently at startup)
 ```
+
+## License
+
+Currently unlicensed (all rights reserved). An open-source license (e.g. MIT) is planned before accepting external contributors.
