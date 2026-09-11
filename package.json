@@ -15,7 +15,8 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "build:win": "electron-vite build && electron-builder --win"
+    "build:win": "electron-vite build && electron-builder --win",
+    "postinstall": "node node_modules/electron/install.js"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
@@ -39,6 +40,7 @@
   },
   "allowScripts": {
     "electron-winstaller@5.4.0": true,
+    "electron@44.3.0": true,
     "esbuild@0.25.12": true,
     "esbuild@0.28.2": true,
     "esbuild@0.18.20": true
