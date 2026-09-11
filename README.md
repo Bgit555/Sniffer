@@ -79,4 +79,4 @@ drizzle/        generated SQL migrations (applied idempotently at startup)
 
 ## License
 
-Currently unlicensed (all rights reserved). An open-source license (e.g. MIT) is planned before accepting external contributors.
+MIT — see [LICENSE](LICENSE).
