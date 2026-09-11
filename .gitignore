@@ -1,0 +1,14 @@
+node_modules/
+out/
+dist/
+release/
+*.log
+.DS_Store
+.env
+.env.*
+sniffer-dev.db
+sniffer-dev.db-*
+drizzle/meta/
+.claude/
+# internal design spec — not part of the app source
+sniffer_windows_local_development_guide.md
